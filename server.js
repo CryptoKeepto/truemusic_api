@@ -18,7 +18,7 @@ app.use("*", (req, res) => {
 })
 
 
-const server = app.listen(3000, () => {
+const server = app.listen(3030, () => {
     const port = server.address().port;
     console.log("Server running at http://localhost:" + port);
 })

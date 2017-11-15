@@ -14,7 +14,8 @@ app.use((req, res, next) => {
 })
 app.use("/api", require("./module/api.js"));
 app.use("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "dist", "index.html"));
+    res.end("Not Found 404");
+    // res.sendFile(path.join(__dirname, "dist", "index.html"));
 })
 
 

@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const db = require("./db.js");
+var sess;
 
+//------------------------------------------------------------------------------------//
 
 router.post("/login", (req, res) => {
     // check email and password
@@ -13,38 +15,50 @@ router.post("/login", (req, res) => {
         if (result.length === 0) {
             res.json({ "status": "fail", "detail": "ไม่มีข้อมูลอยู่ในระบบ กรุณาสมัครสมาชิก"});
         } else {
-            let email = result[0].user_email;
-            let image = result[0].user_image;
-            res.json({ "status": "success", "detail": {"email": email, "image": image}});
+            let res_email = result[0].user_email;
+            let res_image = result[0].user_image;
+            res.json({ "status": "success", "detail": {"email": res_email, "image": res_image}});
+
+            // เก็บใส่ session
+            sess = req.session;
+            sess.email = res_email;
+            sess.image = res_image;
         }        
     });
 
-
-
-    // req.session.email = req.body.email;
-    // req.session.password = req.body.password;
-    // console.log(req.session.email + " " + req.session.password);
-    // res.end("done");
 });
 
 router.get("/", (req, res) => {
-
-    if (req.session.email) {
+    if (sess.email && sess.image) {
+        // เก็บเข้า cookie
+        res.cookie("email", sess.email)
+        res.cookie("image", sess.image)
+        
         res.redirect("/api/logged");
+        res.status(200).end();
     } else {
-        console.log("fail");
+        res.send("คุณยังไม่ login");
+        res.status(500).end();
     }
+   
 });
 
 router.get("/logged", (req, res) => {
-    res.end("logged");
-
+    res.send("<p>Hi: " + req.cookies.email + "</p><a href='/api/logout'>logout</a>")
 });
 
 router.get("/logout", (req, res) => {
-    res.end("logout");
+    // clear cookie
+    res.clearCookie("email");
+    res.clearCookie("image");
+    req.session.destroy(function(err) {
+        if (err) throw err;
+        res.end("destroy done.");
+    })
 
 });
+
+//------------------------------------------------------------------------------------//
 
 router.get("/genres", (req, res) => {
     let sql = `SELECT * FROM genres`;

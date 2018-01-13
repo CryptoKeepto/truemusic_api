@@ -5,6 +5,10 @@ var sess;
 
 //------------------------------------------------------------------------------------//
 
+router.post("/signup", (req, res) => {
+
+});
+
 router.post("/login", (req, res) => {
     // check email and password
     let email = req.body.email;
@@ -25,7 +29,6 @@ router.post("/login", (req, res) => {
             sess.image = res_image;
         }        
     });
-
 });
 
 router.get("/", (req, res) => {
